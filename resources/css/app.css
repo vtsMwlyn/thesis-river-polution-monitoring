@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+a:hover, button:hover {
+    @apply cursor-pointer;
+}
+
+td, th {
+    @apply py-1 px-4 border-2 border-slate-400 text-center;
+}
+
+th {
+    @apply bg-blue-950 text-white py-2;
+}
