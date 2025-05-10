@@ -39,14 +39,102 @@
         @if(!request('show') || request('show') == 'chart')
             <div class="grid grid-cols-2 gap-8">
                 <div class="flex flex-col gap-3">
-                    <h1>Indeks Kualitas Air</h1>
-                    <div class="bg-slate-400 animate-pulse h-[300px]"></div>
+                    <h1>Parameter Kualitas Air</h1>
+                    <canvas id="parameterChart" class="h-[400px]"></canvas>
                 </div>
                 <div class="flex flex-col gap-3">
                     <h1>Tingkat Pencemaran</h1>
-                    <div class="bg-slate-400 animate-pulse h-[300px]"></div>
+                    <canvas id="qualityChart" class="h-[400px]"></canvas>
                 </div>
             </div>
+
+            <script>
+                $(document).ready(() => {
+                    // Parameter
+                    var parameterChartCanvas = document.getElementById('parameterChart').getContext('2d');
+                    var parameterChart = new Chart(parameterChartCanvas, {
+                        type: 'line', // Change to 'bar', 'pie', etc. if needed
+                        data: {
+                            labels: {!! json_encode($labels) !!}, // Time labels
+                            datasets: [
+                                {
+                                    label: 'Temperature (°C)',
+                                    data: {!! json_encode($temp) !!},
+                                    borderColor: '#FF6384',
+                                    // backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                    borderWidth: 2,
+                                    // fill: true
+                                    pointRadius: 0, // Hide data dots
+                                },
+                                {
+                                    label: 'pH',
+                                    data: {!! json_encode($ph) !!},
+                                    borderColor: '#4BC0C0',
+                                    // backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    borderWidth: 2,
+                                    // fill: true
+                                    pointRadius: 0, // Hide data dots
+                                },
+                                {
+                                    label: 'Turbidity (NTU)',
+                                    data: {!! json_encode($turbidity) !!},
+                                    borderColor: '#FF9F40',
+                                    // backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    borderWidth: 2,
+                                    // fill: true
+                                    pointRadius: 0, // Hide data dots
+                                },
+                                {
+                                    label: 'Dissolved Solids (ppm)',
+                                    data: {!! json_encode($tds) !!},
+                                    borderColor: '#9966CC',
+                                    // backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    borderWidth: 2,
+                                    // fill: true
+                                    pointRadius: 0, // Hide data dots
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
+                            }
+                        }
+                    });
+
+                    // Quality Trend
+                    var qualityChartCanvas = document.getElementById('qualityChart').getContext('2d');
+                    var qualityChart = new Chart(qualityChartCanvas, {
+                        type: 'line', // Change to 'bar', 'pie', etc. if needed
+                        data: {
+                            labels: {!! json_encode($labels) !!}, // Time labels
+                            datasets: [
+                                {
+                                    label: 'Quality',
+                                    data: {!! json_encode($qualities) !!},
+                                    borderColor: '#228B22',
+                                    // backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                    borderWidth: 2,
+                                    // fill: true
+                                    pointRadius: 0, // Hide data dots
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    type: 'category',
+                                    labels: ['Excellent', 'Good', 'Moderate', 'Bad', 'Very Bad']
+                                }
+                            }
+                        }
+                    });
+                })
+            </script>
         @else
             <table class="w-full">
                 <thead>
@@ -56,38 +144,37 @@
                     <th>Detail</th>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>dd/mm/yyyy</td>
-                        <td>hh:mm</td>
-                        <td>N/A</td>
-                        <td>
-                            <button type="button" class="show-water-quality-parameters inline-block bg-cyan-900 hover:bg-slate-600 text-white py-1 px-2.5 rounded-lg">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="bg-slate-200">
-                        <td>dd/mm/yyyy</td>
-                        <td>hh:mm</td>
-                        <td>N/A</td>
-                        <td>
-                            <button type="button" class="show-water-quality-parameters inline-block bg-cyan-900 hover:bg-slate-600 text-white py-1 px-2.5 rounded-lg">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>dd/mm/yyyy</td>
-                        <td>hh:mm</td>
-                        <td>N/A</td>
-                        <td>
-                            <button type="button" class="show-water-quality-parameters inline-block bg-cyan-900 hover:bg-slate-600 text-white py-1 px-2.5 rounded-lg">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
+                    @forelse($all_sensor_data as $sensor_data)
+                        <tr class="@if($loop->index % 2 == 0) bg-slate-200 @endif">
+                            <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('d F Y') }}</td>
+                            <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('H:i') }}</td>
+                            <td>{{ $sensor_data->quality }}</td>
+                            <td>
+                                <button type="button" class="show-water-quality-parameters inline-block bg-cyan-900 hover:bg-slate-600 text-white py-1 px-2.5 rounded-lg" data-water_parameters="{{ $sensor_data }}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                    @endforelse
                 </tbody>
             </table>
+
+            <script>
+                $(document).ready(() => {
+                    // Popup display
+                    $('.show-water-quality-parameters').on('click', function(){
+                        const waterParameters = $(this).data('water_parameters');
+
+                        $('#popup-temp').text(waterParameters.temp);
+                        $('#popup-ph').text(waterParameters.ph);
+                        $('#popup-turbidity').text(waterParameters.turbidity);
+                        $('#popup-tds').text(waterParameters.tds);
+
+                        $('#water-quality-parameters-popup').parent().show();
+                    });
+                });
+            </script>
         @endif
     </x-section-container>
 @endsection

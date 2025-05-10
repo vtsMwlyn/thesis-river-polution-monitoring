@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('water_qualities', function (Blueprint $table) {
             $table->id();
+
+            $table->timestamp('date_and_time');
+
+            $table->integer('temp');
+            $table->float('ph');
+            $table->float('turbidity');
+            $table->integer('tds');
+
+            $table->enum('quality', ['Very Bad', 'Bad', 'Moderate', 'Good', 'Excellent'])->nullable();
+
             $table->timestamps();
         });
     }

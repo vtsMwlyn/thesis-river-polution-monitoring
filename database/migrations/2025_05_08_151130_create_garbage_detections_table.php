@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('garbage_detections', function (Blueprint $table) {
             $table->id();
+
+            $table->timestamp('date_and_time');
+
+            $table->unsignedInteger('number');
+            $table->string('image_path');
+
             $table->timestamps();
         });
     }

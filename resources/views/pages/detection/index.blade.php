@@ -10,7 +10,7 @@
         @if(!request('show') || request('show') == 'chart')
             <div class="flex flex-col gap-3 w-1/2">
                 <h1>Jumlah Sampah Terdeteksi di Area Perairan</h1>
-                <div class="bg-slate-400 animate-pulse h-[300px]"></div>
+                <div class="bg-slate-400 animate-pulse h-[400px]"></div>
             </div>
         @else
             <table class="w-full">
