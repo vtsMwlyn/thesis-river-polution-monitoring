@@ -3,7 +3,7 @@
         <i class="bi bi-grid-fill mr-2"></i> Dashboard
     </a>
     <a href="{{ route('sensor.index') }}" class="block px-6 py-3 {{ Request::is('sensor*') ? 'bg-cyan-600' : 'hover:bg-cyan-800' }}">
-        <i class="bi bi-gear-wide-connected mr-2"></i> Pengukuran Sensor
+        <i class="bi bi-water mr-2"></i> Pengukuran Kualitas Air
     </a>
     <a href="{{ route('detection.index') }}" class="block px-6 py-3 {{ Request::is('detection*') ? 'bg-cyan-600' : 'hover:bg-cyan-800' }}">
         <i class="bi bi-bounding-box-circles mr-2"></i> Deteksi Sampah

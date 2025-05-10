@@ -24,6 +24,10 @@
                     <td>Jumlah Padatan Terlarut (ppm)</td>
                     <td id="popup-tds">N/A</td>
                 </tr>
+                <tr>
+                    <td>Jumlah Sampah Terdeteksi</td>
+                    <td id="popup-garbage">N/A</td>
+                </tr>
             </tbody>
         </table>
     </x-popup>
@@ -39,11 +43,15 @@
         @if(!request('show') || request('show') == 'chart')
             <div class="grid grid-cols-2 gap-8">
                 <div class="flex flex-col gap-3">
-                    <h1>Parameter Kualitas Air</h1>
+                    <h1>Hasil Pengukuran Sensor</h1>
                     <canvas id="parameterChart" class="h-[400px]"></canvas>
                 </div>
                 <div class="flex flex-col gap-3">
-                    <h1>Tingkat Pencemaran</h1>
+                    <h1>Jumlah Sampah Terdeteksi</h1>
+                    <div class="h-[300px] bg-slate-400 animate-pulse"></div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <h1>Kualitas Air</h1>
                     <canvas id="qualityChart" class="h-[400px]"></canvas>
                 </div>
             </div>
@@ -148,7 +156,19 @@
                         <tr class="@if($loop->index % 2 == 0) bg-slate-200 @endif">
                             <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('d F Y') }}</td>
                             <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('H:i') }}</td>
-                            <td>{{ $sensor_data->quality }}</td>
+                            <td class="font-extrabold">
+                                @if($sensor_data->quality == 'Very Bad')
+                                    <h1 class="font-extrabold text-red-600">Sangat Buruk</h1>
+                                @elseif($sensor_data->quality == 'Bad')
+                                    <h1 class="font-extrabold text-orange-600">Buruk</h1>
+                                @elseif($sensor_data->quality == 'Moderate')
+                                    <h1 class="font-extrabold text-yellow-600">Sedang</h1>
+                                @elseif($sensor_data->quality == 'Good')
+                                    <h1 class="font-extrabold text-green-700">Baik</h1>
+                                @elseif($sensor_data->quality == 'Excellent')
+                                    <h1 class="font-extrabold text-blue-600">Sangat Baik</h1>
+                                @endif
+                            </td>
                             <td>
                                 <button type="button" class="show-water-quality-parameters inline-block bg-cyan-900 hover:bg-slate-600 text-white py-1 px-2.5 rounded-lg" data-water_parameters="{{ $sensor_data }}">
                                     <i class="bi bi-eye"></i>

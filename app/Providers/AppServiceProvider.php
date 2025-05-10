@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        date_default_timezone_set(config('app.timezone')); // ✅ correct
+        Carbon::setLocale(config('app.locale')); // optional: for Indonesian day names etc.
     }
 }
