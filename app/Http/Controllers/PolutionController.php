@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\WaterQuality;
 use Illuminate\Http\Request;
+use App\Models\GarbageDetection;
 
 class PolutionController extends Controller
 {
     public function index(){
         // Past 24 hours data
         $recent_sensor_data = WaterQuality::where('date_and_time', '>=', Carbon::now()->subDay())->orderBy('date_and_time', 'asc')->get();
+        $recent_detections = GarbageDetection::where('date_and_time', '>=', Carbon::now()->subDay())->orderBy('date_and_time', 'asc')->get();
 
         // Map data for chart
         $labels = [];
@@ -25,11 +27,14 @@ class PolutionController extends Controller
         $turbidity = $recent_sensor_data->pluck('turbidity')->toArray();
         $tds = $recent_sensor_data->pluck('tds')->toArray();
 
+        $garbage_detected = $recent_detections->pluck('number')->toArray();
+
         return view('pages.polution.index', [
             'all_sensor_data' => $recent_sensor_data,
 
             'labels' => $labels,
             'qualities' => $qualities,
+            'garbage_detected' => $garbage_detected,
 
             'temp' => $temperature,
             'ph' => $ph,

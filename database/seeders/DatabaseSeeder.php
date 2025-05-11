@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Carbon\Carbon;
 use App\Helpers\KNN;
+use App\Models\GarbageDetection;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
 use App\Models\Warning;
@@ -30,6 +31,8 @@ class DatabaseSeeder extends Seeder
         $turbidity = mt_rand(5, 100) / 10; // Force to be float (0.5 to 10)
         $tds = mt_rand(50, 600);
 
+        $number_detected = mt_rand(0, 10);
+
         $baseTimestamp = Carbon::now();
         $sensorData = [];
 
@@ -43,6 +46,10 @@ class DatabaseSeeder extends Seeder
             $ph += mt_rand(-20, 20) / 10; // Small float adjustment
             $turbidity += mt_rand(-30, 30) / 10; // Small float adjustment
             $tds += mt_rand(-50, 50);
+
+            if(mt_rand(0, 3) == 0){
+                $number_detected += mt_rand(-2, 2);
+            }
 
             // Prevent negative values
             $temp = ($temp < 0) ? 0 : $temp;
@@ -116,6 +123,12 @@ class DatabaseSeeder extends Seeder
                 'created_at' => $timestamp,
                 'updated_at' => $timestamp
             ];
+
+            GarbageDetection::create([
+                'date_and_time' => $timestamp,
+                'number' => $number_detected,
+                'image_path' => (mt_rand(0, 1) == 0 ? 'example1.jpg' : 'example2.jpg')
+            ]);
         }
 
         WaterQuality::insert($sensorData);

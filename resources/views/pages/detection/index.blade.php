@@ -10,8 +10,38 @@
         @if(!request('show') || request('show') == 'chart')
             <div class="flex flex-col gap-3 w-1/2">
                 <h1>Jumlah Sampah Terdeteksi di Area Perairan</h1>
-                <div class="bg-slate-400 animate-pulse h-[400px]"></div>
+                <canvas id="detectionChart" class="h-[400px]"></canvas>
             </div>
+
+            <script>
+                // Detections
+                var detectionChartCanvas = document.getElementById('detectionChart').getContext('2d');
+                var detectionChart = new Chart(detectionChartCanvas, {
+                    type: 'line', // Change to 'bar', 'pie', etc. if needed
+                    data: {
+                        labels: {!! json_encode($labels) !!}, // Time labels
+                        datasets: [
+                            {
+                                label: 'Numbers of Garbage',
+                                data: {!! json_encode($garbage_detected) !!},
+                                borderColor: 'blue',
+                                // backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderWidth: 2,
+                                // fill: true
+                                pointRadius: 0, // Hide data dots
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false
+                            }
+                        }
+                    }
+                });
+            </script>
         @else
             <table class="w-full">
                 <thead>
@@ -21,36 +51,19 @@
                     <th>Foto</th>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>dd/mm/yyyy hh:mm</td>
-                        <td>N/A</td>
-                        <td>N/A</td>
-                        <td>
-                            <div class="w-full flex justify-center">
-                                <div class="bg-slate-400 animate-pulse w-[200px] h-[120px]"></div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="bg-slate-200">
-                        <td>dd/mm/yyyy hh:mm</td>
-                        <td>N/A</td>
-                        <td>N/A</td>
-                        <td>
-                            <div class="w-full flex justify-center">
-                                <div class="bg-slate-400 animate-pulse w-[200px] h-[120px]"></div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>dd/mm/yyyy hh:mm</td>
-                        <td>N/A</td>
-                        <td>N/A</td>
-                        <td>
-                            <div class="w-full flex justify-center">
-                                <div class="bg-slate-400 animate-pulse w-[200px] h-[120px]"></div>
-                            </div>
-                        </td>
-                    </tr>
+                    @forelse ($all_detections as $detection)
+                        <tr class="@if($loop->index % 2 == 0) bg-slate-200 @endif">
+                            <td>{{ Carbon\Carbon::parse($detection->date_and_time)->format('d F Y') }}</td>
+                            <td>{{ Carbon\Carbon::parse($detection->date_and_time)->format('H:i') }}</td>
+                            <td>{{ $detection->number }}</td>
+                            <td>
+                                <div class="w-full flex justify-center">
+                                    <img src="{{ Storage::url($detection->image_path) }}" class="h-[250px]" alt="Detection photo">
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                    @endforelse
                 </tbody>
             </table>
         @endif

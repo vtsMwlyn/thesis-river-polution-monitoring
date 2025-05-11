@@ -48,7 +48,7 @@
                 </div>
                 <div class="flex flex-col gap-3">
                     <h1>Jumlah Sampah Terdeteksi</h1>
-                    <div class="h-[300px] bg-slate-400 animate-pulse"></div>
+                    <canvas id="detectionChart" class="h-[400px]"></canvas>
                 </div>
                 <div class="flex flex-col gap-3">
                     <h1>Kualitas Air</h1>
@@ -97,6 +97,35 @@
                                     data: {!! json_encode($tds) !!},
                                     borderColor: '#9966CC',
                                     // backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    borderWidth: 2,
+                                    // fill: true
+                                    pointRadius: 0, // Hide data dots
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
+                            }
+                        }
+                    });
+
+
+                    // Detections
+                    var detectionChartCanvas = document.getElementById('detectionChart').getContext('2d');
+                    var detectionChart = new Chart(detectionChartCanvas, {
+                        type: 'line', // Change to 'bar', 'pie', etc. if needed
+                        data: {
+                            labels: {!! json_encode($labels) !!}, // Time labels
+                            datasets: [
+                                {
+                                    label: 'Numbers of Garbage',
+                                    data: {!! json_encode($garbage_detected) !!},
+                                    borderColor: 'blue',
+                                    // backgroundColor: 'rgba(255, 99, 132, 0.2)',
                                     borderWidth: 2,
                                     // fill: true
                                     pointRadius: 0, // Hide data dots
