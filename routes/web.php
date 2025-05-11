@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\APIController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SensorController;
@@ -36,5 +37,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [PolutionController::class, 'index'])->name('index');
     });
 });
+
+// APIs
+Route::get('/api/test', function(){
+    return view('pages.test.send-data-api');
+});
+Route::post('/api/send-sensor-data', [APIController::class, 'store_sensor_data']);
+Route::post('/api/send-detection-data', [APIController::class, 'store_detection_data']);
 
 require __DIR__.'/auth.php';
