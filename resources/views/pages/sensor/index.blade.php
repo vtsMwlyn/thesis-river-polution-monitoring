@@ -152,7 +152,7 @@
                     <th>Padatan Terlarut</th>
                 </thead>
                 <tbody>
-                    @forelse($all_sensor_data as $sensor_data)
+                    @forelse($all_sensor_data->reverse() as $sensor_data)
                         <tr class="@if($loop->index % 2 == 0) bg-slate-200 @endif">
                             <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('d F Y, H:i') }}</td>
                             <td>{{ $sensor_data->temp }}</td>

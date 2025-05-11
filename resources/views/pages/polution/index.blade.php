@@ -181,21 +181,21 @@
                     <th>Detail</th>
                 </thead>
                 <tbody>
-                    @forelse($all_sensor_data as $sensor_data)
+                    @forelse($all_sensor_data->reverse() as $sensor_data)
                         <tr class="@if($loop->index % 2 == 0) bg-slate-200 @endif">
                             <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('d F Y') }}</td>
                             <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('H:i') }}</td>
                             <td class="font-extrabold">
                                 @if($sensor_data->quality == 'Very Bad')
-                                    <h1 class="font-extrabold text-red-600">Sangat Buruk</h1>
+                                    <span class="text-white px-3 py-0.5 rounded-lg bg-red-600">Sangat Buruk</span>
                                 @elseif($sensor_data->quality == 'Bad')
-                                    <h1 class="font-extrabold text-orange-600">Buruk</h1>
+                                    <span class="text-white px-3 py-0.5 rounded-lg bg-orange-600">Buruk</span>
                                 @elseif($sensor_data->quality == 'Moderate')
-                                    <h1 class="font-extrabold text-yellow-600">Sedang</h1>
+                                    <span class="text-white px-3 py-0.5 rounded-lg bg-yellow-600">Sedang</span>
                                 @elseif($sensor_data->quality == 'Good')
-                                    <h1 class="font-extrabold text-green-700">Baik</h1>
+                                    <span class="text-white px-3 py-0.5 rounded-lg bg-green-700">Baik</span>
                                 @elseif($sensor_data->quality == 'Excellent')
-                                    <h1 class="font-extrabold text-blue-600">Sangat Baik</h1>
+                                    <span class="text-white px-3 py-0.5 rounded-lg bg-blue-600">Sangat Baik</span>
                                 @endif
                             </td>
                             <td>

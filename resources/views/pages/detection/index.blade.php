@@ -51,7 +51,7 @@
                     <th>Foto</th>
                 </thead>
                 <tbody>
-                    @forelse ($all_detections as $detection)
+                    @forelse ($all_detections->reverse() as $detection)
                         <tr class="@if($loop->index % 2 == 0) bg-slate-200 @endif">
                             <td>{{ Carbon\Carbon::parse($detection->date_and_time)->format('d F Y') }}</td>
                             <td>{{ Carbon\Carbon::parse($detection->date_and_time)->format('H:i') }}</td>

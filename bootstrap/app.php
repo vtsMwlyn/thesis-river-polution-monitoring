@@ -12,8 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
-            'http://localhost:8000/api/send-sensor-data',
-            'http://localhost:8000/api/send-detection-data',
+            'api/*'
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
