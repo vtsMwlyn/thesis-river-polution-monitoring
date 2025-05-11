@@ -63,6 +63,9 @@
                             </td>
                         </tr>
                     @empty
+                        <tr>
+                            <td colspan="4">- Data tidak ditemukan -</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>

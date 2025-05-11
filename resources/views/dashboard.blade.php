@@ -5,46 +5,50 @@
         <x-section-container class="flex flex-col items-center gap-2">
             <i class="bi bi-thermometer-low text-4xl text-blue-800"></i>
             <h1 class="text-center">Suhu</h1>
-            <h1 class="text-xl text-center font-extrabold">{{ $latest_sensor_data->temp }}</h1>
+            <h1 class="text-xl text-center font-extrabold">{{ $latest_sensor_data?->temp ?? 'N/A' }}</h1>
         </x-section-container>
 
         <x-section-container class="flex flex-col items-center gap-2">
             <i class="bi bi-reception-2 text-4xl text-blue-800"></i>
             <h1 class="text-center">Nilai pH</h1>
-            <h1 class="text-xl text-center font-extrabold">{{ $latest_sensor_data->ph }}</h1>
+            <h1 class="text-xl text-center font-extrabold">{{ $latest_sensor_data?->ph ?? 'N/A' }}</h1>
         </x-section-container>
 
         <x-section-container class="flex flex-col items-center gap-2">
             <i class="bi bi-droplet-half text-4xl text-blue-800"></i>
             <h1 class="text-center">Kekeruhan</h1>
-            <h1 class="text-xl text-center font-extrabold">{{ $latest_sensor_data->turbidity }}</h1>
+            <h1 class="text-xl text-center font-extrabold">{{ $latest_sensor_data?->turbidity ?? 'N/A' }}</h1>
         </x-section-container>
 
         <x-section-container class="flex flex-col items-center gap-2">
             <i class="bi bi-ui-radios-grid text-4xl text-blue-800"></i>
             <h1 class="text-center">Padatan Terlarut</h1>
-            <h1 class="text-xl text-center font-extrabold">{{ $latest_sensor_data->tds }}</h1>
+            <h1 class="text-xl text-center font-extrabold">{{ $latest_sensor_data?->tds ?? 'N/A' }}</h1>
         </x-section-container>
 
         <x-section-container class="flex flex-col items-center gap-2">
             <i class="bi bi-trash2 text-4xl text-blue-800"></i>
             <h1 class="text-center">Deteksi Sampah</h1>
-            <h1 class="text-xl text-center font-extrabold">{{ $latest_detection->number }}</h1>
+            <h1 class="text-xl text-center font-extrabold">{{ $latest_detection?->number ?? 'N/A' }}</h1>
         </x-section-container>
 
         <x-section-container class="flex flex-col items-center gap-2">
             <i class="bi bi-stars text-4xl text-blue-800"></i>
             <h1 class="text-center">Kualitas Air</h1>
-            @if($latest_sensor_data->quality == 'Very Bad')
-                <h1 class="text-xl text-center font-extrabold text-red-600">Sangat Buruk</h1>
-            @elseif($latest_sensor_data->quality == 'Bad')
-                <h1 class="text-xl text-center font-extrabold text-orange-600">Buruk</h1>
-            @elseif($latest_sensor_data->quality == 'Moderate')
-                <h1 class="text-xl text-center font-extrabold text-yellow-600">Sedang</h1>
-            @elseif($latest_sensor_data->quality == 'Good')
-                <h1 class="text-xl text-center font-extrabold text-green-700">Baik</h1>
-            @elseif($latest_sensor_data->quality == 'Excellent')
-                <h1 class="text-xl text-center font-extrabold text-blue-600">Sangat Baik</h1>
+            @if($latest_sensor_data)
+                @if($latest_sensor_data->quality == 'Very Bad')
+                    <h1 class="text-xl text-center font-extrabold text-red-600">Sangat Buruk</h1>
+                @elseif($latest_sensor_data->quality == 'Bad')
+                    <h1 class="text-xl text-center font-extrabold text-orange-600">Buruk</h1>
+                @elseif($latest_sensor_data->quality == 'Moderate')
+                    <h1 class="text-xl text-center font-extrabold text-yellow-600">Sedang</h1>
+                @elseif($latest_sensor_data->quality == 'Good')
+                    <h1 class="text-xl text-center font-extrabold text-green-700">Baik</h1>
+                @elseif($latest_sensor_data->quality == 'Excellent')
+                    <h1 class="text-xl text-center font-extrabold text-blue-600">Sangat Baik</h1>
+                @endif
+            @else
+                <h1 class="text-xl text-center font-extrabold">N/A</h1>
             @endif
         </x-section-container>
     </div>
@@ -53,7 +57,11 @@
         <x-section-container title="Pemantauan Terkini" class="w-3/5">
             <!-- Placeholder -->
             <div class="w-full flex justify-center">
-                <img src="{{ Storage::url($latest_detection->image_path) }}" class="h-[400px]" style="object-fit: cover; object-position: center;" alt="Latest Monitoring">
+                @if($latest_detection)
+                    <img src="{{ Storage::url($latest_detection->image_path) }}" class="h-[400px]" style="object-fit: cover; object-position: center;" alt="Latest Monitoring">
+                @else
+                    <div class="bg-slate-400 animate-pulse h-[400px] w-full"></div>
+                @endif
             </div>
         </x-section-container>
 
@@ -72,7 +80,7 @@
                         <div>{!! $warning->message !!}</div>
                     </div>
                 @empty
-                    - Belum ada peringatan terkini -
+                    <p class="text-center">- Belum ada peringatan terkini -</p>
                 @endforelse
             </div>
         </x-section-container>

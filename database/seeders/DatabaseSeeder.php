@@ -26,112 +26,112 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Generate fake sensors data
-        $temp = mt_rand(5, 30);
-        $ph = mt_rand(50, 90) / 10; // Force to be float (5.0 to 9.0)
-        $turbidity = mt_rand(5, 100) / 10; // Force to be float (0.5 to 10)
-        $tds = mt_rand(50, 600);
+        // $temp = mt_rand(5, 30);
+        // $ph = mt_rand(50, 90) / 10; // Force to be float (5.0 to 9.0)
+        // $turbidity = mt_rand(5, 100) / 10; // Force to be float (0.5 to 10)
+        // $tds = mt_rand(50, 600);
 
-        $number_detected = mt_rand(0, 10);
+        // $number_detected = mt_rand(0, 10);
 
-        $baseTimestamp = Carbon::now();
-        $sensorData = [];
+        // $baseTimestamp = Carbon::now();
+        // $sensorData = [];
 
-        $prev_quality = '';
+        // $prev_quality = '';
 
-        for ($i = 0; $i < 1000; $i++) {
-            // Subtract 5 minutes (300 seconds) for each iteration
-            $timestamp = (clone $baseTimestamp)->subSeconds($i * 300);
+        // for ($i = 0; $i < 1000; $i++) {
+        //     // Subtract 5 minutes (300 seconds) for each iteration
+        //     $timestamp = (clone $baseTimestamp)->subSeconds($i * 300);
 
-            $temp += mt_rand(-5, 5);
-            $ph += mt_rand(-20, 20) / 10; // Small float adjustment
-            $turbidity += mt_rand(-30, 30) / 10; // Small float adjustment
-            $tds += mt_rand(-50, 50);
+        //     $temp += mt_rand(-5, 5);
+        //     $ph += mt_rand(-20, 20) / 10; // Small float adjustment
+        //     $turbidity += mt_rand(-30, 30) / 10; // Small float adjustment
+        //     $tds += mt_rand(-50, 50);
 
-            if(mt_rand(0, 3) == 0){
-                $number_detected += mt_rand(-2, 2);
-            }
+        //     if(mt_rand(0, 3) == 0){
+        //         $number_detected += mt_rand(-2, 2);
+        //     }
 
-            // Prevent negative values
-            $temp = ($temp < 0) ? 0 : $temp;
-            $ph = ($ph < 0) ? 0 : round($ph, 2);
-            $turbidity = ($turbidity < 0) ? 0 : round($turbidity, 2);
-            $tds = ($tds < 0) ? 0 : $tds;
+        //     // Prevent negative values
+        //     $temp = ($temp < 0) ? 0 : $temp;
+        //     $ph = ($ph < 0) ? 0 : round($ph, 2);
+        //     $turbidity = ($turbidity < 0) ? 0 : round($turbidity, 2);
+        //     $tds = ($tds < 0) ? 0 : $tds;
 
-            // Prevent exessive values
-            $temp = ($temp > 50) ? 50 : $temp;
-            $ph = ($ph > 14) ? 14 : round($ph, 2);
+        //     // Prevent exessive values
+        //     $temp = ($temp > 50) ? 50 : $temp;
+        //     $ph = ($ph > 14) ? 14 : round($ph, 2);
 
-            // Find parameters that may cause the decreasing of the quality
-            $out_of_standards = [];
+        //     // Find parameters that may cause the decreasing of the quality
+        //     $out_of_standards = [];
 
-            if($temp < 12 || $temp > 25){
-                $out_of_standards[] = 'suhu';
-            }
+        //     if($temp < 12 || $temp > 25){
+        //         $out_of_standards[] = 'suhu';
+        //     }
 
-            if($ph < 6.5 || $ph > 8.5){
-                $out_of_standards[] = 'pH';
-            }
+        //     if($ph < 6.5 || $ph > 8.5){
+        //         $out_of_standards[] = 'pH';
+        //     }
 
-            if($turbidity < 1 || $turbidity > 5){
-                $out_of_standards[] = 'tingkat kekeruhan';
-            }
+        //     if($turbidity < 1 || $turbidity > 5){
+        //         $out_of_standards[] = 'tingkat kekeruhan';
+        //     }
 
-            if($tds > 600){
-                $out_of_standards[] = 'jumlah padatan terlarut';
-            }
+        //     if($tds > 600){
+        //         $out_of_standards[] = 'jumlah padatan terlarut';
+        //     }
 
-            $sus_parameters = '';
+        //     $sus_parameters = '';
 
-            if (count($out_of_standards) > 1) {
-                $lastItem = array_pop($out_of_standards); // Remove the last item
-                $sus_parameters = implode(', ', $out_of_standards) . ', dan ' . $lastItem;
-            } else {
-                $sus_parameters = implode('', $out_of_standards); // If only one item, just print it
-            }
+        //     if (count($out_of_standards) > 1) {
+        //         $lastItem = array_pop($out_of_standards); // Remove the last item
+        //         $sus_parameters = implode(', ', $out_of_standards) . ', dan ' . $lastItem;
+        //     } else {
+        //         $sus_parameters = implode('', $out_of_standards); // If only one item, just print it
+        //     }
 
-            // Predict the water quality
-            $quality = KNN::predict($temp, $ph, $turbidity, $tds);
+        //     // Predict the water quality
+        //     $quality = KNN::predict($temp, $ph, $turbidity, $tds);
 
-            if(!in_array($prev_quality, ['', 'Bad', 'Very Bad']) && in_array($quality, ['Bad', 'Very Bad'])){
-                $translated = '';
+        //     if(!in_array($prev_quality, ['', 'Bad', 'Very Bad']) && in_array($quality, ['Bad', 'Very Bad'])){
+        //         $translated = '';
 
-                if($quality == 'Bad'){
-                    $translated = 'Buruk';
-                } else if($quality == 'Very Bad'){
-                    $translated = 'Sangat Buruk';
-                }
+        //         if($quality == 'Bad'){
+        //             $translated = 'Buruk';
+        //         } else if($quality == 'Very Bad'){
+        //             $translated = 'Sangat Buruk';
+        //         }
 
-                Warning::create([
-                    'date_and_time' => $timestamp,
-                    'message' => 'Terjadi penurunan kualitas air sungai ke tingkat <strong>"' . $translated .'"</strong>. Beberapa parameter seperti <strong>' . $sus_parameters . '</strong> diduga menyebabkan penurunan.',
-                    'category' => $quality,
-                ]);
-            }
+        //         Warning::create([
+        //             'date_and_time' => $timestamp,
+        //             'message' => 'Terjadi penurunan kualitas air sungai ke tingkat <strong>"' . $translated .'"</strong>. Beberapa parameter seperti <strong>' . $sus_parameters . '</strong> diduga menyebabkan penurunan.',
+        //             'category' => $quality,
+        //         ]);
+        //     }
 
-            $prev_quality = $quality;
+        //     $prev_quality = $quality;
 
-            $sensorData[] = [
-                'date_and_time' => $timestamp,
+        //     $sensorData[] = [
+        //         'date_and_time' => $timestamp,
 
-                'temp' => $temp,
-                'ph' => $ph,
-                'turbidity' => $turbidity,
-                'tds' => $tds,
+        //         'temp' => $temp,
+        //         'ph' => $ph,
+        //         'turbidity' => $turbidity,
+        //         'tds' => $tds,
 
-                'quality' => $quality,
+        //         'quality' => $quality,
 
-                'created_at' => $timestamp,
-                'updated_at' => $timestamp
-            ];
+        //         'created_at' => $timestamp,
+        //         'updated_at' => $timestamp
+        //     ];
 
-            GarbageDetection::create([
-                'date_and_time' => $timestamp,
-                'number' => $number_detected,
-                'image_path' => (mt_rand(0, 1) == 0 ? 'example1.jpg' : 'example2.jpg')
-            ]);
-        }
+        //     GarbageDetection::create([
+        //         'date_and_time' => $timestamp,
+        //         'number' => $number_detected,
+        //         'image_path' => (mt_rand(0, 1) == 0 ? 'example1.jpg' : 'example2.jpg')
+        //     ]);
+        // }
 
-        WaterQuality::insert($sensorData);
+        // WaterQuality::insert($sensorData);
 
     }
 }
