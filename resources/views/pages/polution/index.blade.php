@@ -198,7 +198,7 @@
                                 @endif
                             </td>
                             <td>
-                                <button type="button" class="show-water-quality-parameters inline-block bg-cyan-900 hover:bg-slate-600 text-white py-1 px-2.5 rounded-lg" data-water_parameters="{{ $sensor_data }}">
+                                <button type="button" class="show-water-quality-parameters inline-block bg-cyan-900 hover:bg-slate-600 text-white py-1 px-2.5 rounded-lg" data-water_parameters="{{ $sensor_data }}" data-detections="{{ App\Models\GarbageDetection::where('date_and_time', 'like', Carbon\Carbon::parse($sensor_data->date_and_time)->format('Y-m-d H:i') . '%')->first() }}">
                                     <i class="bi bi-eye"></i>
                                 </button>
                             </td>
@@ -216,11 +216,13 @@
                     // Popup display
                     $('.show-water-quality-parameters').on('click', function(){
                         const waterParameters = $(this).data('water_parameters');
+                        const garbageDetection = $(this).data('detections');
 
                         $('#popup-temp').text(waterParameters.temp);
                         $('#popup-ph').text(waterParameters.ph);
                         $('#popup-turbidity').text(waterParameters.turbidity);
                         $('#popup-tds').text(waterParameters.tds);
+                        $('#popup-garbage').text(garbageDetection?.number)
 
                         $('#water-quality-parameters-popup').parent().show();
                     });
