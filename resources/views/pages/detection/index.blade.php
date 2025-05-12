@@ -58,7 +58,7 @@
                             <td>{{ $detection->number }}</td>
                             <td>
                                 <div class="w-full flex justify-center">
-                                    <img src="{{ Storage::url($detection->image_path) }}" class="h-[250px]" alt="Detection photo">
+                                    <img src="{{ asset('storage/' . $detection->image_path) }}" class="h-[250px]" alt="Detection photo">
                                 </div>
                             </td>
                         </tr>

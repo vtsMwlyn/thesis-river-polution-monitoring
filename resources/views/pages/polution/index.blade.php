@@ -113,13 +113,12 @@
                         }
                     });
 
-
                     // Detections
                     var detectionChartCanvas = document.getElementById('detectionChart').getContext('2d');
                     var detectionChart = new Chart(detectionChartCanvas, {
                         type: 'line', // Change to 'bar', 'pie', etc. if needed
                         data: {
-                            labels: {!! json_encode($labels) !!}, // Time labels
+                            labels: {!! json_encode($labels2) !!}, // Time labels
                             datasets: [
                                 {
                                     label: 'Numbers of Garbage',

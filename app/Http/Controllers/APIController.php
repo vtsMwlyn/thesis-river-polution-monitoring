@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\KNN;
+use App\Models\GarbageDetection;
 use App\Models\Warning;
 use App\Models\WaterQuality;
 use Carbon\Carbon;
@@ -102,7 +103,15 @@ class APIController extends Controller
 
     public function store_detection_data(Request $request){
         if($request->secret == 'VTS_Meowlynna-2312'){
-            return response()->json(['success' => true, 'message' => 'masuk'], 200);
+            $path = $request->file('image')->store('detections');
+
+            GarbageDetection::create([
+                'date_and_time' => $request->date_and_time,
+                'number' => $request->number,
+                'image_path' => $path,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Successfully stored the detection data!'], 200);
         }
         else {
             abort(401);

@@ -13,7 +13,7 @@ export default defineConfig({
         port: 5173,
         strictPort: true,
         hmr: {
-            host: '192.168.1.5', // Your IP address
+            host: '192.168.1.4', // Your IP address
             port: 5173
         },
         cors: {
