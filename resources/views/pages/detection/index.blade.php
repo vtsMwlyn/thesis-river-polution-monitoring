@@ -45,22 +45,36 @@
         @else
             <table class="w-full">
                 <thead>
-                    <th>Tanggal</th>
                     <th>Waktu</th>
+                    <th>Lokasi</th>
                     <th>Jumlah Sampah Terdeteksi</th>
                     <th>Foto</th>
+                    @if(Auth::id() == 2)
+                        <th>Action</th>
+                    @endif
                 </thead>
                 <tbody>
                     @forelse ($all_detections->reverse() as $detection)
                         <tr class="@if($loop->index % 2 == 0) bg-slate-200 @endif">
-                            <td>{{ Carbon\Carbon::parse($detection->date_and_time)->format('d F Y') }}</td>
-                            <td>{{ Carbon\Carbon::parse($detection->date_and_time)->format('H:i') }}</td>
+                            <td>{{ Carbon\Carbon::parse($detection->date_and_time)->format('d F Y') }} <br/> {{ Carbon\Carbon::parse($detection->date_and_time)->format('H:i') }}</td>
+                            <td>{{ $detection->location ?? 'N/A' }}</td>
                             <td>{{ $detection->number }}</td>
                             <td>
                                 <div class="w-full flex justify-center">
-                                    <img src="{{ asset('storage/' . $detection->image_path) }}" class="h-[250px]" alt="Detection photo">
+                                    <img src="{{ asset('storage/' . $detection->image_path) }}" class="h-[250px]" alt="Detection photo" loading="lazy">
                                 </div>
                             </td>
+                            @if(Auth::id() == 2)
+                                <td>
+                                    <form action="{{ route('detection.destroy', $detection->id) }}" method="post">
+                                        @method('delete')
+                                        @csrf
+                                        <button type="submit" class="show-water-quality-parameters inline-block bg-cyan-900 hover:bg-slate-600 text-white py-1 px-2.5 rounded-lg" onclick="return confirm('Are you sure want to delete this item?');">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>

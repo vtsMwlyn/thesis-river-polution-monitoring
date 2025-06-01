@@ -25,11 +25,13 @@ Route::middleware('auth')->group(function () {
     // Sensor measurement
     Route::prefix('/sensor')->name('sensor.')->group(function(){
         Route::get('/', [SensorController::class, 'index'])->name('index');
+        Route::delete('/{water_quality}', [SensorController::class, 'destroy'])->name('destroy');
     });
 
     // Garbage detection
     Route::prefix('/detection')->name('detection.')->group(function(){
         Route::get('/', [DetectionController::class, 'index'])->name('index');
+        Route::delete('/{garbage_detection}', [DetectionController::class, 'destroy'])->name('destroy');
     });
 
     // Polution level

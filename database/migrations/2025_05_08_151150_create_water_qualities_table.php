@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->timestamp('date_and_time');
+            $table->string('location')->nullable();
 
             $table->integer('temp');
             $table->float('ph');

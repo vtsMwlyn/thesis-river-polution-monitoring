@@ -34,4 +34,10 @@ class SensorController extends Controller
             'tds' => $tds,
         ]);
     }
+
+    public function destroy(WaterQuality $water_quality){
+        $water_quality->delete();
+
+        return back()->with('success', 'Successfully deleted the water quality data!');
+    }
 }

@@ -4,13 +4,16 @@ namespace Database\Seeders;
 
 use Carbon\Carbon;
 use App\Helpers\KNN;
-use App\Models\GarbageDetection;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Warning;
+use Illuminate\Support\Str;
 use App\Models\WaterQuality;
 use Illuminate\Database\Seeder;
+use App\Models\GarbageDetection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,119 +22,144 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Cleanups
+        Storage::disk('public')->delete(Storage::disk('public')->allFiles());
+
+        // Generate user data
         User::create([
             'name' => 'Admin',
-            'email' => 'admin@email.com',
+            'email' => 'admin@wsage.online',
+            'password' => Hash::make('password')
+        ]);
+
+        User::create([
+            'name' => 'System Admin',
+            'email' => 'sysadmin@wsage.online',
             'password' => Hash::make('password')
         ]);
 
         // Generate fake sensors data
-        // $temp = mt_rand(5, 30);
-        // $ph = mt_rand(50, 90) / 10; // Force to be float (5.0 to 9.0)
-        // $turbidity = mt_rand(5, 100) / 10; // Force to be float (0.5 to 10)
-        // $tds = mt_rand(50, 600);
+        $randomLocation = (mt_rand(0, 1) === 0) ? 'Location 1' : 'Location 2';
 
-        // $number_detected = mt_rand(0, 10);
+        $temp = mt_rand(5, 30);
+        $ph = mt_rand(50, 90) / 10;
+        $turbidity = mt_rand(5, 100) / 10;
+        $tds = mt_rand(50, 600);
 
-        // $baseTimestamp = Carbon::now();
-        // $sensorData = [];
+        $number_detected = mt_rand(0, 10);
 
-        // $prev_quality = '';
+        $baseTimestamp = Carbon::now();
+        $sensorData = [];
 
-        // for ($i = 0; $i < 1000; $i++) {
-        //     // Subtract 5 minutes (300 seconds) for each iteration
-        //     $timestamp = (clone $baseTimestamp)->subSeconds($i * 300);
+        $prev_quality = '';
 
-        //     $temp += mt_rand(-5, 5);
-        //     $ph += mt_rand(-20, 20) / 10; // Small float adjustment
-        //     $turbidity += mt_rand(-30, 30) / 10; // Small float adjustment
-        //     $tds += mt_rand(-50, 50);
+        for ($i = 0; $i < 1000; $i++) {
+            $timestamp = (clone $baseTimestamp)->subSeconds($i * 300);
 
-        //     if(mt_rand(0, 3) == 0){
-        //         $number_detected += mt_rand(-2, 2);
-        //     }
+            $temp += mt_rand(-5, 5);
+            $ph += mt_rand(-20, 20) / 10;
+            $turbidity += mt_rand(-30, 30) / 10;
+            $tds += mt_rand(-50, 50);
 
-        //     // Prevent negative values
-        //     $temp = ($temp < 0) ? 0 : $temp;
-        //     $ph = ($ph < 0) ? 0 : round($ph, 2);
-        //     $turbidity = ($turbidity < 0) ? 0 : round($turbidity, 2);
-        //     $tds = ($tds < 0) ? 0 : $tds;
+            if(mt_rand(0, 3) == 0){
+                $number_detected += mt_rand(-2, 2);
+            }
 
-        //     // Prevent exessive values
-        //     $temp = ($temp > 50) ? 50 : $temp;
-        //     $ph = ($ph > 14) ? 14 : round($ph, 2);
+            $temp = ($temp < 0) ? 0 : $temp;
+            $ph = ($ph < 0) ? 0 : round($ph, 2);
+            $turbidity = ($turbidity < 0) ? 0 : round($turbidity, 2);
+            $tds = ($tds < 0) ? 0 : $tds;
+            $number_detected = ($number_detected < 0) ? 0 : $number_detected;
 
-        //     // Find parameters that may cause the decreasing of the quality
-        //     $out_of_standards = [];
+            $temp = ($temp > 50) ? 50 : $temp;
+            $ph = ($ph > 14) ? 14 : round($ph, 2);
 
-        //     if($temp < 12 || $temp > 25){
-        //         $out_of_standards[] = 'suhu';
-        //     }
+            $out_of_standards = [];
 
-        //     if($ph < 6.5 || $ph > 8.5){
-        //         $out_of_standards[] = 'pH';
-        //     }
+            if($temp < 12 || $temp > 25){
+                $out_of_standards[] = 'suhu';
+            }
 
-        //     if($turbidity < 1 || $turbidity > 5){
-        //         $out_of_standards[] = 'tingkat kekeruhan';
-        //     }
+            if($ph < 6.5 || $ph > 8.5){
+                $out_of_standards[] = 'pH';
+            }
 
-        //     if($tds > 600){
-        //         $out_of_standards[] = 'jumlah padatan terlarut';
-        //     }
+            if($turbidity < 1 || $turbidity > 5){
+                $out_of_standards[] = 'tingkat kekeruhan';
+            }
 
-        //     $sus_parameters = '';
+            if($tds > 600){
+                $out_of_standards[] = 'jumlah padatan terlarut';
+            }
 
-        //     if (count($out_of_standards) > 1) {
-        //         $lastItem = array_pop($out_of_standards); // Remove the last item
-        //         $sus_parameters = implode(', ', $out_of_standards) . ', dan ' . $lastItem;
-        //     } else {
-        //         $sus_parameters = implode('', $out_of_standards); // If only one item, just print it
-        //     }
+            $sus_parameters = '';
 
-        //     // Predict the water quality
-        //     $quality = KNN::predict($temp, $ph, $turbidity, $tds);
+            if (count($out_of_standards) > 1) {
+                $lastItem = array_pop($out_of_standards); // Remove the last item
+                $sus_parameters = implode(', ', $out_of_standards) . ', dan ' . $lastItem;
+            } else {
+                $sus_parameters = implode('', $out_of_standards); // If only one item, just print it
+            }
 
-        //     if(!in_array($prev_quality, ['', 'Bad', 'Very Bad']) && in_array($quality, ['Bad', 'Very Bad'])){
-        //         $translated = '';
+            // Predict the water quality
+            $quality = KNN::predict($temp, $ph, $turbidity, $tds);
 
-        //         if($quality == 'Bad'){
-        //             $translated = 'Buruk';
-        //         } else if($quality == 'Very Bad'){
-        //             $translated = 'Sangat Buruk';
-        //         }
+            if(!in_array($prev_quality, ['', 'Bad', 'Very Bad']) && in_array($quality, ['Bad', 'Very Bad'])){
+                $translated = '';
 
-        //         Warning::create([
-        //             'date_and_time' => $timestamp,
-        //             'message' => 'Terjadi penurunan kualitas air sungai ke tingkat <strong>"' . $translated .'"</strong>. Beberapa parameter seperti <strong>' . $sus_parameters . '</strong> diduga menyebabkan penurunan.',
-        //             'category' => $quality,
-        //         ]);
-        //     }
+                if($quality == 'Bad'){
+                    $translated = 'Buruk';
+                } else if($quality == 'Very Bad'){
+                    $translated = 'Sangat Buruk';
+                }
 
-        //     $prev_quality = $quality;
+                Warning::create([
+                    'date_and_time' => $timestamp,
+                    'message' => 'Terjadi penurunan kualitas air sungai di lokasi ' . $randomLocation . ' ke tingkat <strong>"' . $translated .'"</strong>. Beberapa parameter seperti <strong>' . $sus_parameters . '</strong> diduga menyebabkan penurunan.',
+                    'category' => $quality,
+                ]);
+            }
 
-        //     $sensorData[] = [
-        //         'date_and_time' => $timestamp,
+            $prev_quality = $quality;
 
-        //         'temp' => $temp,
-        //         'ph' => $ph,
-        //         'turbidity' => $turbidity,
-        //         'tds' => $tds,
+            $sensorData[] = [
+                'date_and_time' => $timestamp,
+                'location' => $randomLocation,
 
-        //         'quality' => $quality,
+                'temp' => $temp,
+                'ph' => $ph,
+                'turbidity' => $turbidity,
+                'tds' => $tds,
 
-        //         'created_at' => $timestamp,
-        //         'updated_at' => $timestamp
-        //     ];
+                'quality' => $quality,
 
-        //     GarbageDetection::create([
-        //         'date_and_time' => $timestamp,
-        //         'number' => $number_detected,
-        //         'image_path' => (mt_rand(0, 1) == 0 ? 'example1.jpg' : 'example2.jpg')
-        //     ]);
-        // }
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp
+            ];
 
-        // WaterQuality::insert($sensorData);
+            // Generate detection data
+            $randomImage = (mt_rand(0, 1) === 0) ? 'example1.jpg' : 'example2.jpg';
+            $sourcePath = public_path($randomImage);
+
+            if (file_exists($sourcePath)) {
+                $mimeType = File::mimeType($sourcePath);
+                $extension = File::extension($sourcePath) ?: 'jpg';
+
+                $newFileName = Str::random(20) . '.' . $extension;
+                $destinationPath = 'detections/' . $newFileName;
+
+                Storage::disk('public')->put($destinationPath, file_get_contents($sourcePath));
+
+                GarbageDetection::create([
+                    'date_and_time' => $timestamp,
+                    'location'      => $randomLocation,
+                    'number'        => $number_detected,
+                    'image_path'    => $destinationPath,
+                ]);
+            }
+        }
+
+        WaterQuality::insert($sensorData);
 
     }
 }

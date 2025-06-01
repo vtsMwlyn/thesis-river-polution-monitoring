@@ -174,16 +174,16 @@
         @else
             <table class="w-full">
                 <thead>
-                    <th>Tanggal</th>
                     <th>Waktu</th>
+                    <th>Lokasi</th>
                     <th>Tingkat Pencemaran</th>
                     <th>Detail</th>
                 </thead>
                 <tbody>
                     @forelse($all_sensor_data->reverse() as $sensor_data)
                         <tr class="@if($loop->index % 2 == 0) bg-slate-200 @endif">
-                            <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('d F Y') }}</td>
-                            <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('H:i') }}</td>
+                            <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('d F Y') }}<br/>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('H:i') }}</td>
+                            <td>{{ $sensor_data->location ?? 'N/A' }}</td>
                             <td class="font-extrabold">
                                 @if($sensor_data->quality == 'Very Bad')
                                     <span class="text-white px-3 py-0.5 rounded-lg bg-red-600">Sangat Buruk</span>

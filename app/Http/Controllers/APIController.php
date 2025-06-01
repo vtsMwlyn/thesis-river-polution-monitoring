@@ -22,8 +22,9 @@ class APIController extends Controller
                 $ph = $request->ph;
                 $turbidity = $request->turbidity;
                 $tds = $request->tds;
+                $location = $request->location ?? null;
 
-                // return response()->json(['success' => true, 'message' => 'Retrieved data: ' . $temp . ', ' . $ph . ', ' . $turbidity . ', ' . $tds], 200);
+                // return response()->json(['success' => true, 'message' => 'Retrieved data: ' . $temp . ', ' . $ph . ', ' . $turbidity . ', ' . $tds, ', ', $location], 200);
 
                 // Find parameters that may cause the decreasing of the quality
                 $out_of_standards = [];
@@ -70,13 +71,14 @@ class APIController extends Controller
 
                     Warning::create([
                         'date_and_time' => Carbon::now()->format('Y-m-d H:i:s'),
-                        'message' => 'Terjadi penurunan kualitas air sungai ke tingkat <strong>"' . $translated .'"</strong>. Beberapa parameter seperti <strong>' . $sus_parameters . '</strong> diduga menyebabkan penurunan.',
+                        'message' => 'Terjadi penurunan kualitas air sungai di lokasi ' . $location . ' ke tingkat <strong>"' . $translated .'"</strong>. Beberapa parameter seperti <strong>' . $sus_parameters . '</strong> diduga menyebabkan penurunan.',
                         'category' => $quality,
                     ]);
                 }
 
                 WaterQuality::create([
                     'date_and_time' => Carbon::now()->format('Y-m-d H:i:s'),
+                    'location' => $location,
 
                     'temp' => $temp,
                     'ph' => $ph,
@@ -107,6 +109,7 @@ class APIController extends Controller
 
             GarbageDetection::create([
                 'date_and_time' => $request->date_and_time,
+                'location' => $request->location ?? null,
                 'number' => $request->number,
                 'image_path' => $path,
             ]);

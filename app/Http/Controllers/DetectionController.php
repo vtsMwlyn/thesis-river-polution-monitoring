@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\GarbageDetection;
+use Illuminate\Support\Facades\Storage;
 
 class DetectionController extends Controller
 {
@@ -26,5 +27,13 @@ class DetectionController extends Controller
             'labels' => $labels,
             'garbage_detected' => $garbage_detected,
         ]);
+    }
+
+    public function destroy(GarbageDetection $garbage_detection){
+        Storage::disk('public')->delete($garbage_detection->image_path);
+
+        $garbage_detection->delete();
+
+        return back()->with('success', 'Successfully deleted the garbage detection data!');
     }
 }
