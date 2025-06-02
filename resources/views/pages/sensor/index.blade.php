@@ -309,6 +309,13 @@
                 });
             </script>
         @else
+            @php
+                $total_tmp = 0;
+                $total_ph = 0;
+                $total_tbd = 0;
+                $total_tds = 0;
+            @endphp
+
             <table class="w-full">
                 <thead>
                     <th>Waktu</th>
@@ -323,6 +330,13 @@
                 </thead>
                 <tbody>
                     @forelse($all_sensor_data->reverse() as $sensor_data)
+                        @php
+                            $total_tmp += $sensor_data->temp;
+                            $total_ph += $sensor_data->ph;
+                            $total_tbd += $sensor_data->turbidity;
+                            $total_tds += $sensor_data->tds;
+                        @endphp
+
                         <tr class="@if($loop->index % 2 == 0) bg-slate-200 @endif">
                             <td>{{ Carbon\Carbon::parse($sensor_data->date_and_time)->format('d F Y, H:i') }}</td>
                             <td>{{ $sensor_data->location ?? 'N/A' }}</td>
@@ -330,6 +344,7 @@
                             <td>{{ $sensor_data->ph }}</td>
                             <td>{{ $sensor_data->turbidity }}</td>
                             <td>{{ $sensor_data->tds }}</td>
+
                             @if(Auth::id() == 2)
                                 <td>
                                     <form action="{{ route('sensor.destroy', $sensor_data->id) }}" method="post">
@@ -347,6 +362,14 @@
                             <td colspan="5">- Data tidak ditemukan -</td>
                         </tr>
                     @endforelse
+
+                    <tr>
+                        <td colspan="2">Rata-Rata</td>
+                        <td>{{ number_format($total_tmp / $all_sensor_data->count(), 2) }}</td>
+                        <td>{{ number_format($total_ph / $all_sensor_data->count(), 2) }}</td>
+                        <td>{{ number_format($total_tbd / $all_sensor_data->count(), 2) }}</td>
+                        <td>{{ number_format($total_tds / $all_sensor_data->count(), 2) }}</td>
+                    </tr>
                 </tbody>
             </table>
         @endif

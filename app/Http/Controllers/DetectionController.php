@@ -14,6 +14,10 @@ class DetectionController extends Controller
         // Past 24 hours data
         $recent_detections = GarbageDetection::where('date_and_time', '>=', Carbon::now()->subDay())->orderBy('date_and_time', 'asc')->get();
 
+        if(request('date') || request('starttime') || request('endtime')){
+            $recent_detections = GarbageDetection::filter(request(['date', 'starttime', 'endtime']))->orderBy('date_and_time', 'asc')->get();
+        }
+
         // Map data for chart
         $labels = [];
         foreach($recent_detections->pluck('date_and_time')->toArray() as $raw_date_time){

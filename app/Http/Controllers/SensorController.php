@@ -13,6 +13,10 @@ class SensorController extends Controller
         // Past 24 hours data
         $recent_sensor_data = WaterQuality::where('date_and_time', '>=', Carbon::now()->subDay())->orderBy('date_and_time', 'asc')->get();
 
+        if(request('date') || request('starttime') || request('endtime')){
+            $recent_sensor_data = WaterQuality::filter(request(['date', 'starttime', 'endtime']))->orderBy('date_and_time', 'asc')->get();
+        }
+
         // Map data for chart
         $labels = [];
         foreach($recent_sensor_data->pluck('date_and_time')->toArray() as $raw_date_time){
