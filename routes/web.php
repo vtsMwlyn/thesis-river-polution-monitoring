@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\KNN;
 use App\Http\Controllers\APIController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
@@ -7,6 +8,16 @@ use App\Http\Controllers\SensorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PolutionController;
 use App\Http\Controllers\DetectionController;
+use App\Models\WaterQuality;
+
+// Hehe
+Route::get('/repredict', function(){
+    foreach(WaterQuality::all() as $wq){
+        WaterQuality::find($wq->id)->update([
+            'quality' => KNN::predict($wq->temp, $wq->ph, $wq->turbidity, $wq->tds)
+        ]);
+    }
+});
 
 // Default route
 Route::get('/', function () {
