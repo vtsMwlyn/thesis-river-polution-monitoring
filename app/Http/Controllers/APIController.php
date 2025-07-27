@@ -18,6 +18,7 @@ class APIController extends Controller
             if($request->secret == 'VTS_Meowlynna-2312'){
                 DB::beginTransaction();
 
+                // Retrieve data
                 $temp = $request->temp;
                 $ph = $request->ph;
                 $turbidity = $request->turbidity;
@@ -45,13 +46,14 @@ class APIController extends Controller
                     $out_of_standards[] = 'jumlah padatan terlarut';
                 }
 
+                // Text formatting
                 $sus_parameters = '';
 
                 if (count($out_of_standards) > 1) {
-                    $lastItem = array_pop($out_of_standards); // Remove the last item
+                    $lastItem = array_pop($out_of_standards);
                     $sus_parameters = implode(', ', $out_of_standards) . ', dan ' . $lastItem;
                 } else {
-                    $sus_parameters = implode('', $out_of_standards); // If only one item, just print it
+                    $sus_parameters = implode('', $out_of_standards);
                 }
 
                 // Predict the water quality
@@ -60,6 +62,7 @@ class APIController extends Controller
                 // Retrieve last data
                 $latest_sensor_data = WaterQuality::latest()->first();
 
+                // Compare: If the quality turned to bad or very bad, then generate warning
                 if($latest_sensor_data && !in_array($latest_sensor_data?->quality, ['Bad', 'Very Bad']) && in_array($quality, ['Bad', 'Very Bad'])){
                     $translated = '';
 
@@ -76,6 +79,7 @@ class APIController extends Controller
                     ]);
                 }
 
+                // Finally, store the sensor and quality data
                 WaterQuality::create([
                     'date_and_time' => Carbon::now()->format('Y-m-d H:i:s'),
                     'location' => $location,
@@ -99,14 +103,17 @@ class APIController extends Controller
         catch(Exception $e){
             DB::rollback();
 
+            // Give success response back to the data sender
             return response()->json(['success' => false, 'message' => 'Error occured: ' . $e->getMessage()], 500);
         }
     }
 
     public function store_detection_data(Request $request){
         if($request->secret == 'VTS_Meowlynna-2312'){
+            // Store detection photo
             $path = $request->file('image')->store('detections');
 
+            // Store detection data to database
             GarbageDetection::create([
                 'date_and_time' => $request->date_and_time,
                 'location' => $request->location ?? null,
@@ -114,6 +121,7 @@ class APIController extends Controller
                 'image_path' => $path,
             ]);
 
+            // Give success response back to the data sender
             return response()->json(['success' => true, 'message' => 'Successfully stored the detection data!'], 200);
         }
         else {

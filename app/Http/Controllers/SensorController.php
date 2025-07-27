@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class SensorController extends Controller
 {
     public function index(){
-        // Past 24 hours data
+        // Get past 24 hours data
         $recent_sensor_data = WaterQuality::where('date_and_time', '>=', Carbon::now()->subDay())->orderBy('date_and_time', 'asc')->get();
 
         if(request('date') || request('starttime') || request('endtime')){
@@ -28,6 +28,7 @@ class SensorController extends Controller
         $turbidity = $recent_sensor_data->pluck('turbidity')->toArray();
         $tds = $recent_sensor_data->pluck('tds')->toArray();
 
+        // Render sensor page with the data
         return view('pages.sensor.index', [
             'all_sensor_data' => $recent_sensor_data,
 
@@ -39,9 +40,9 @@ class SensorController extends Controller
         ]);
     }
 
-    public function destroy(WaterQuality $water_quality){
-        $water_quality->delete();
+    // public function destroy(WaterQuality $water_quality){
+    //     $water_quality->delete();
 
-        return back()->with('success', 'Successfully deleted the water quality data!');
-    }
+    //     return back()->with('success', 'Successfully deleted the water quality data!');
+    // }
 }

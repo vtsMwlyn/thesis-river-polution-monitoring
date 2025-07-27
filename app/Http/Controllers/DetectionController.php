@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class DetectionController extends Controller
 {
     public function index(){
-
-        // Past 24 hours data
+        // Get Past 24 hours data
         $recent_detections = GarbageDetection::where('date_and_time', '>=', Carbon::now()->subDay())->orderBy('date_and_time', 'asc')->get();
 
         if(request('date') || request('starttime') || request('endtime')){
@@ -26,6 +25,7 @@ class DetectionController extends Controller
 
         $garbage_detected = $recent_detections->pluck('number')->toArray();
 
+        // Render detection page with the data
         return view('pages.detection.index', [
             'all_detections' => $recent_detections,
             'labels' => $labels,
@@ -33,11 +33,11 @@ class DetectionController extends Controller
         ]);
     }
 
-    public function destroy(GarbageDetection $garbage_detection){
-        Storage::disk('public')->delete($garbage_detection->image_path);
+    // public function destroy(GarbageDetection $garbage_detection){
+    //     Storage::disk('public')->delete($garbage_detection->image_path);
 
-        $garbage_detection->delete();
+    //     $garbage_detection->delete();
 
-        return back()->with('success', 'Successfully deleted the garbage detection data!');
-    }
+    //     return back()->with('success', 'Successfully deleted the garbage detection data!');
+    // }
 }

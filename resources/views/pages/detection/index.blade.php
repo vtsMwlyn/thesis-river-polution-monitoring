@@ -3,8 +3,8 @@
 @section('content')
     <x-section-container title="Deteksi Sampah">
         <div class="flex mb-6">
-            <a href="{{ route('detection.index', ['show' => 'chart']) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ !request('show') || request('show') == 'chart' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Grafik</a>
-            <a href="{{ route('detection.index', ['show' => 'table']) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ request('show') == 'table' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Tabel</a>
+            <a href="{{ route('detection.index', ['show' => 'chart', 'date' => request('date')]) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ !request('show') || request('show') == 'chart' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Grafik</a>
+            <a href="{{ route('detection.index', ['show' => 'table', 'date' => request('date')]) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ request('show') == 'table' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Tabel</a>
         </div>
 
         @if(!request('show') || request('show') == 'chart')
@@ -61,7 +61,7 @@
                             <td>{{ $detection->number }}</td>
                             <td>
                                 <div class="w-full flex justify-center">
-                                    <img src="{{ asset('storage/' . $detection->image_path) }}" class="h-[250px]" alt="Detection photo" loading="lazy">
+                                    <img src="{{ Storage::url('app/public/' . $detection->image_path) }}" class="h-[250px]" alt="Detection photo" loading="lazy">
                                 </div>
                             </td>
                             @if(Auth::id() == 2)

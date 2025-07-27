@@ -36,8 +36,8 @@
 @section('content')
     <x-section-container title="Tingkat Pencemaran">
         <div class="flex mb-6">
-            <a href="{{ route('polution.index', ['show' => 'chart']) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ !request('show') || request('show') == 'chart' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Grafik</a>
-            <a href="{{ route('polution.index', ['show' => 'table']) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ request('show') == 'table' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Tabel</a>
+            <a href="{{ route('polution.index', ['show' => 'chart', 'date' => request('date')]) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ !request('show') || request('show') == 'chart' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Grafik</a>
+            <a href="{{ route('polution.index', ['show' => 'table', 'date' => request('date')]) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ request('show') == 'table' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Tabel</a>
         </div>
 
         @if(!request('show') || request('show') == 'chart')

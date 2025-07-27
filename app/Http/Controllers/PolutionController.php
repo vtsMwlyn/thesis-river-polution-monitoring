@@ -10,7 +10,7 @@ use App\Models\GarbageDetection;
 class PolutionController extends Controller
 {
     public function index(){
-        // Past 24 hours data
+        // Get ast 24 hours data
         $recent_sensor_data = WaterQuality::where('date_and_time', '>=', Carbon::now()->subDay())->orderBy('date_and_time', 'asc')->get();
         $recent_detections = GarbageDetection::where('date_and_time', '>=', Carbon::now()->subDay())->orderBy('date_and_time', 'asc')->get();
 
@@ -40,6 +40,7 @@ class PolutionController extends Controller
 
         $garbage_detected = $recent_detections->pluck('number')->toArray();
 
+        // Render polution page with the data
         return view('pages.polution.index', [
             'all_sensor_data' => $recent_sensor_data,
 

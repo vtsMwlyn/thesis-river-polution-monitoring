@@ -16,6 +16,7 @@ class DashboardController extends Controller
         $recent_warning = Warning::where('date_and_time', '>=', Carbon::now()->subDay())->latest()->get();
         $recent_detection = GarbageDetection::where('date_and_time', '>=', Carbon::now()->subDay())->latest()->first();
 
+        // Render dashboard page with the data
         return view('dashboard', [
             'latest_sensor_data' => $recent_sensor_data,
             'all_warnings' => $recent_warning,

@@ -29,8 +29,8 @@
 @section('content')
     <x-section-container title="Pengukuran Sensor">
         <div class="flex mb-6">
-            <a href="{{ route('sensor.index', ['show' => 'chart']) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ !request('show') || request('show') == 'chart' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Grafik</a>
-            <a href="{{ route('sensor.index', ['show' => 'table']) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ request('show') == 'table' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Tabel</a>
+            <a href="{{ route('sensor.index', ['show' => 'chart', 'date' => request('date')]) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ !request('show') || request('show') == 'chart' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Grafik</a>
+            <a href="{{ route('sensor.index', ['show' => 'table', 'date' => request('date')]) }}" class="inline-block w-[150px] text-center px-4 h-8 border-b-4 {{ request('show') == 'table' ? 'border-cyan-600' : 'border-transparent hover:border-slate-300' }}">Tampilan Tabel</a>
         </div>
 
         @if(!request('show') || request('show') == 'chart')
@@ -362,14 +362,6 @@
                             <td colspan="5">- Data tidak ditemukan -</td>
                         </tr>
                     @endforelse
-
-                    <tr>
-                        <td colspan="2">Rata-Rata</td>
-                        <td>{{ number_format($total_tmp / $all_sensor_data->count(), 2) }}</td>
-                        <td>{{ number_format($total_ph / $all_sensor_data->count(), 2) }}</td>
-                        <td>{{ number_format($total_tbd / $all_sensor_data->count(), 2) }}</td>
-                        <td>{{ number_format($total_tds / $all_sensor_data->count(), 2) }}</td>
-                    </tr>
                 </tbody>
             </table>
         @endif

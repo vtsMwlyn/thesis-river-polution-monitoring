@@ -58,7 +58,7 @@
             <!-- Placeholder -->
             <div class="w-full flex justify-center">
                 @if($latest_detection)
-                    <img src="{{ asset('storage/' . $latest_detection->image_path) }}" class="h-[400px]" style="object-fit: cover; object-position: center;" alt="Latest Monitoring">
+                    <img src="{{ Storage::url('app/public/' . $latest_detection->image_path) }}" class="h-[400px]" style="object-fit: cover; object-position: center;" alt="Latest Monitoring">
                 @else
                     <div class="bg-slate-400 animate-pulse h-[400px] w-full"></div>
                 @endif
