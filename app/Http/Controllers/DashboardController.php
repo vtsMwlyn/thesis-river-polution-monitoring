@@ -13,7 +13,7 @@ class DashboardController extends Controller
     public function index(){
         // Past 24 hours data
         $recent_sensor_data = WaterQuality::where('date_and_time', '>=', Carbon::now()->subDay())->latest()->first();
-        $recent_warning = Warning::where('date_and_time', '>=', Carbon::now()->subDay())->latest()->get();
+        $recent_warning = Warning::where('date_and_time', '>=', Carbon::now()->subDay())->orderBy('date_and_time', 'desc')->get();
         $recent_detection = GarbageDetection::where('date_and_time', '>=', Carbon::now()->subDay())->latest()->first();
 
         // Render dashboard page with the data
