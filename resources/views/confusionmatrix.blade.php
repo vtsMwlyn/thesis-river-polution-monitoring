@@ -15,41 +15,11 @@
                 }
             }
 
-            // Populate the confusion matrix
+            // Generate confusion matrix values
             foreach ($true_labels as $index => $actual) {
                 $predicted = $predicted_labels[$index];
                 $confusionMatrix[$actual][$predicted]++;
             }
-
-            $total = 0;
-            $correct = 0;
-            $precision = [];
-            $recall = [];
-            $f1 = [];
-
-            foreach ($classes as $class) {
-                $tp = $confusionMatrix[$class][$class];
-                $fp = 0;
-                $fn = 0;
-
-                foreach ($classes as $other) {
-                    if ($other !== $class) {
-                        $fp += $confusionMatrix[$other][$class]; // predicted as class, but should be other
-                        $fn += $confusionMatrix[$class][$other]; // should be class, predicted as other
-                    }
-                }
-
-                $precision[$class] = ($tp + $fp) > 0 ? round($tp / ($tp + $fp), 2) : 0;
-                $recall[$class] = ($tp + $fn) > 0 ? round($tp / ($tp + $fn), 2) : 0;
-                $f1[$class] = ($precision[$class] + $recall[$class]) > 0
-                    ? round(2 * $precision[$class] * $recall[$class] / ($precision[$class] + $recall[$class]), 2)
-                    : 0;
-
-                $total += array_sum($confusionMatrix[$class]);
-                $correct += $tp;
-            }
-
-            $accuracy = $total > 0 ? round($correct / $total, 2) : 0;
         @endphp
 
         <h2 class="text-xl font-bold mb-4">Confusion Matrix</h2>

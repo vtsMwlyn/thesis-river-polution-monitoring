@@ -25,8 +25,6 @@ class APIController extends Controller
                 $tds = $request->tds;
                 $location = $request->location ?? null;
 
-                // return response()->json(['success' => true, 'message' => 'Retrieved data: ' . $temp . ', ' . $ph . ', ' . $turbidity . ', ' . $tds, ', ', $location], 200);
-
                 // Find parameters that may cause the decreasing of the quality
                 $out_of_standards = [];
 
@@ -94,6 +92,7 @@ class APIController extends Controller
 
                 DB::commit();
 
+                // Give success response back to the data sender
                 return response()->json(['success' => true, 'message' => 'Successfully stored the sensor data!'], 200);
             }
             else {
@@ -103,7 +102,6 @@ class APIController extends Controller
         catch(Exception $e){
             DB::rollback();
 
-            // Give success response back to the data sender
             return response()->json(['success' => false, 'message' => 'Error occured: ' . $e->getMessage()], 500);
         }
     }
