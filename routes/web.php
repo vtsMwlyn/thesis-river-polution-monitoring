@@ -10,15 +10,6 @@ use App\Http\Controllers\PolutionController;
 use App\Http\Controllers\DetectionController;
 use App\Models\WaterQuality;
 
-// Hehe
-Route::get('/repredict', function(){
-    foreach(WaterQuality::all() as $wq){
-        WaterQuality::find($wq->id)->update([
-            'quality' => KNN::predict($wq->temp, $wq->ph, $wq->turbidity, $wq->tds)
-        ]);
-    }
-});
-
 // Default route
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -52,9 +43,6 @@ Route::middleware('auth')->group(function () {
 });
 
 // APIs
-Route::get('/api/test', function(){
-    return view('pages.test.send-data-api');
-});
 Route::post('/api/send-sensor-data', [APIController::class, 'store_sensor_data']);
 Route::post('/api/send-detection-data', [APIController::class, 'store_detection_data']);
 
