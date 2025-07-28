@@ -104,6 +104,7 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/latest-data', [DashboardController::class, 'latest_data'])->name('latest-data');
 
     // Sensor measurement
     Route::prefix('/sensor')->name('sensor.')->group(function(){
