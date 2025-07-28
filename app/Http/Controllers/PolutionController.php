@@ -26,30 +26,18 @@ class PolutionController extends Controller
         }
 
         $qualities = $recent_sensor_data->pluck('quality')->toArray();
-
         $temperature = $recent_sensor_data->pluck('temp')->toArray();
         $ph = $recent_sensor_data->pluck('ph')->toArray();
         $turbidity = $recent_sensor_data->pluck('turbidity')->toArray();
         $tds = $recent_sensor_data->pluck('tds')->toArray();
-
-        // Map data for chart
-        $labels2 = [];
-        foreach($recent_detections->pluck('date_and_time')->toArray() as $raw_date_time){
-            $labels2[] = Carbon::parse($raw_date_time)->format('H:i');
-        }
-
         $garbage_detected = $recent_detections->pluck('number')->toArray();
 
         // Render polution page with the data
         return view('pages.polution.index', [
             'all_sensor_data' => $recent_sensor_data,
-
             'labels' => $labels,
             'qualities' => $qualities,
-
-            'labels2' => $labels2,
             'garbage_detected' => $garbage_detected,
-
             'temp' => $temperature,
             'ph' => $ph,
             'turbidity' => $turbidity,

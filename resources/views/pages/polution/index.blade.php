@@ -118,7 +118,7 @@
                     var detectionChart = new Chart(detectionChartCanvas, {
                         type: 'line', // Change to 'bar', 'pie', etc. if needed
                         data: {
-                            labels: {!! json_encode($labels2) !!}, // Time labels
+                            labels: {!! json_encode($labels) !!}, // Time labels
                             datasets: [
                                 {
                                     label: 'Numbers of Garbage',
