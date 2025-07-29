@@ -18,12 +18,24 @@ class APIController extends Controller
             if($request->secret == 'VTS_Meowlynna-2312'){
                 DB::beginTransaction();
 
+                // Data validation
+                $validSensorData = $request->validate([
+                    'temp' => 'required|numeric|min:0',
+                    'ph' => 'required|numeric|min:0',
+                    'turbidity' => 'required|numeric|min:0',
+                    'tds' => 'required|numeric|min:0',
+                    'location' => 'nullable|string'
+                ]);
+
                 // Retrieve data
-                $temp = $request->temp;
-                $ph = $request->ph;
-                $turbidity = $request->turbidity;
-                $tds = $request->tds;
-                $location = $request->location ?? null;
+                $temp = $validSensorData['temp'];
+                $ph = $validSensorData['ph'];
+                $turbidity = $validSensorData['turbidity'];
+                $tds = $validSensorData['tds'];
+                $location = $validSensorData['location'];
+
+                // Predict the water quality
+                $quality = KNN::predict($temp, $ph, $turbidity, $tds);
 
                 // Find parameters that may cause the decreasing of the quality
                 $out_of_standards = [];
@@ -44,7 +56,6 @@ class APIController extends Controller
                     $out_of_standards[] = 'jumlah padatan terlarut';
                 }
 
-                // Text formatting
                 $sus_parameters = '';
 
                 if (count($out_of_standards) > 1) {
@@ -54,9 +65,7 @@ class APIController extends Controller
                     $sus_parameters = implode('', $out_of_standards);
                 }
 
-                // Predict the water quality
-                $quality = KNN::predict($temp, $ph, $turbidity, $tds);
-
+                //===== WARNING GENERATION MECHANISM ===== //
                 // Retrieve last data
                 $latest_sensor_data = WaterQuality::latest()->first();
 
@@ -78,17 +87,10 @@ class APIController extends Controller
                 }
 
                 // Finally, store the sensor and quality data
-                WaterQuality::create([
-                    'date_and_time' => Carbon::now()->format('Y-m-d H:i:s'),
-                    'location' => $location,
+                $validSensorData['date_and_time'] = Carbon::now()->format('Y-m-d H:i:s');
+                $validSensorData['quality'] = $quality;
 
-                    'temp' => $temp,
-                    'ph' => $ph,
-                    'turbidity' => $turbidity,
-                    'tds' => $tds,
-
-                    'quality' => $quality,
-                ]);
+                WaterQuality::create($validSensorData);
 
                 DB::commit();
 
@@ -107,29 +109,27 @@ class APIController extends Controller
     }
 
     public function store_detection_data(Request $request){
-        try {
-            if($request->secret == 'VTS_Meowlynna-2312'){
-                // Store image
-                $path = $request->file('image')->store('detections');
+        if($request->secret == 'VTS_Meowlynna-2312'){
+            // Data validation
+            $validDetectionData = $request->validate([
+                'date_and_time' => 'required|string',
+                'location' => 'nullable|string',
+                'number' => 'required|numeric|min:0',
+                'image' => 'file|image',
+            ]);
 
-                // Store data
-                GarbageDetection::create([
-                    'date_and_time' => $request->date_and_time,
-                    'location' => $request->location ?? null,
-                    'number' => $request->number,
-                    'image_path' => $path,
-                ]);
+            // Store detection photo
+            $path = $request->file('image')->store('detections');
+            $validDetectionData['image_path'] = $path;
 
-                // Send success status
-                return response()->json(['success' => true, 'message' => 'Successfully stored the detection data!'], 200);
-            }
-            else {
-                abort(401);
-            }
+            // Store detection data to database
+            GarbageDetection::create($validDetectionData);
+
+            // Give success response back to the data sender
+            return response()->json(['success' => true, 'message' => 'Successfully stored the detection data!'], 200);
         }
-
-        catch(Exception $e){
-            return response()->json(['success' => false, 'message' => 'Error occured: ' . $e->getMessage()], 500);
+        else {
+            abort(401);
         }
     }
 }

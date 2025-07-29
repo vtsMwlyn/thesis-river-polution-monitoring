@@ -32,12 +32,4 @@ class DetectionController extends Controller
             'garbage_detected' => $garbage_detected,
         ]);
     }
-
-    // public function destroy(GarbageDetection $garbage_detection){
-    //     Storage::disk('public')->delete($garbage_detection->image_path);
-
-    //     $garbage_detection->delete();
-
-    //     return back()->with('success', 'Successfully deleted the garbage detection data!');
-    // }
 }
